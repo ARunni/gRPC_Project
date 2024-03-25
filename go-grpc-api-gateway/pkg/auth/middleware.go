@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -18,7 +19,7 @@ func InitAuthMiddleware(svc *ServiceClient) AuthMiddlewareConfig {
 }
 
 func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
-	authorization := ctx.Request.Header.Get("authorization")
+	authorization := ctx.Request.Header.Get("Authorization")
 
 	if authorization == "" {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
@@ -42,6 +43,14 @@ func (c *AuthMiddlewareConfig) AuthRequired(ctx *gin.Context) {
 	}
 
 	ctx.Set("userId", res.UserId)
+
+	if res.Role == "admin" {
+		ctx.Set("userRole", "admin")
+	} else if res.Role == "user" {
+		ctx.Set("userRole", "user")
+	}
+
+	fmt.Println("User role:", ctx.GetString("userRole"))
 
 	ctx.Next()
 }
