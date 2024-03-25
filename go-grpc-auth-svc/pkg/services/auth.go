@@ -51,13 +51,28 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 	if !match {
 		return &pb.LoginResponse{
 			Status: http.StatusNotFound,
-			Error:  "User not found",
+			Error:  "Password incorrect",
 		}, nil
 	}
 
 	token, _ := s.Jwt.GenerateToken(user)
 
 	return &pb.LoginResponse{
+		Status: http.StatusOK,
+		Token:  token,
+	}, nil
+}
+
+func (s *Server) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
+	var admin models.User
+	if result := s.H.DB.Where(&models.User{Email: req.Email}).First(&admin); result.Error != nil {
+		return &pb.AdminLoginResponse{
+			Status: http.StatusNotFound,
+			Error:  "admin not found",
+		}, nil
+	}
+	token, _ := s.Jwt.GenerateTokenAdmin((admin))
+	return &pb.AdminLoginResponse{
 		Status: http.StatusOK,
 		Token:  token,
 	}, nil
@@ -85,5 +100,6 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 	return &pb.ValidateResponse{
 		Status: http.StatusOK,
 		UserId: user.Id,
+		Role:   claims.Role,
 	}, nil
 }
