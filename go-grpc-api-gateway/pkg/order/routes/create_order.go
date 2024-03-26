@@ -21,8 +21,16 @@ func CreateOrder(ctx *gin.Context, c pb.OrderServiceClient) {
 		return
 	}
 
-	userId, _ := ctx.Get("userId")
-
+	userId, ok := ctx.Get("userId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userRole, _ := ctx.Get("userRole")
+	if userRole != "user" {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "only users can create order"})
+		return
+	}
 	res, err := c.CreateOrder(context.Background(), &pb.CreateOrderRequest{
 		ProductId: body.ProductId,
 		Quantity:  body.Quantity,

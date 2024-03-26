@@ -8,7 +8,7 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc Validate(ValidateRequest) returns (ValidateResponse) {}
-  rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {}
+  rpc AdminLogin(AdminLoginRequest) returns (AdminLoginResponse) {}
 }
 
 // Register
@@ -39,23 +39,21 @@ message LoginResponse {
 // Validate
 
 message ValidateRequest {
-  string token = 1; 
-  string role = 2;
+  string token = 1;
+  string role = 2; 
 }
 
 message ValidateResponse {
   int64 status = 1;
   string error = 2;
   int64 userId = 3;
-  string role = 4;
+  string role = 4; 
 }
-
 // AdminLogin
 
 message AdminLoginRequest {
   string email = 1;
   string password = 2;
-  string token =3;
 }
 
 message AdminLoginResponse {

@@ -17,6 +17,7 @@ type Server struct {
 }
 
 func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
+	
 	product, err := s.ProductSvc.FindOne(req.ProductId)
 
 	if err != nil {
@@ -26,6 +27,7 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 	} else if product.Data.Stock < req.Quantity {
 		return &pb.CreateOrderResponse{Status: http.StatusConflict, Error: "Stock too less"}, nil
 	}
+	
 	order := models.Order{
 		Price:     product.Data.Price,
 		ProductId: product.Data.Id,

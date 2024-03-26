@@ -21,7 +21,11 @@ func CreateProduct(ctx *gin.Context, c pb.ProductServiceClient) {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
+	userRole, _ := ctx.Get("userRole")
+	if userRole != "admin" {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Only Admins can create product"})
+		return
+	}
 	res, err := c.CreateProduct(context.Background(), &pb.CreateProductRequest{
 		Name:  body.Name,
 		Stock: body.Stock,

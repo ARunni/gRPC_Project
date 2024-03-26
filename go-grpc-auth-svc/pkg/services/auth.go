@@ -71,7 +71,17 @@ func (s *Server) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb
 			Error:  "admin not found",
 		}, nil
 	}
+	match := utils.CheckPasswordHash(req.Password, admin.Password)
+
+	if !match {
+		return &pb.AdminLoginResponse{
+			Status: http.StatusNotFound,
+			Error:  "admin not found 2",
+		}, nil
+	}
+
 	token, _ := s.Jwt.GenerateTokenAdmin((admin))
+
 	return &pb.AdminLoginResponse{
 		Status: http.StatusOK,
 		Token:  token,
@@ -79,6 +89,7 @@ func (s *Server) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb
 }
 
 func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.ValidateResponse, error) {
+
 	claims, err := s.Jwt.ValidateToken(req.Token)
 
 	if err != nil {
@@ -93,7 +104,7 @@ func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.Val
 	if result := s.H.DB.Where(&models.User{Email: claims.Email}).First(&user); result.Error != nil {
 		return &pb.ValidateResponse{
 			Status: http.StatusNotFound,
-			Error:  "User not found",
+			Error:  "Data not found",
 		}, nil
 	}
 
