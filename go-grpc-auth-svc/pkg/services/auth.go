@@ -76,7 +76,7 @@ func (s *Server) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb
 	if !match {
 		return &pb.AdminLoginResponse{
 			Status: http.StatusNotFound,
-			Error:  "admin not found 2",
+			Error:  "Password incorrect",
 		}, nil
 	}
 
